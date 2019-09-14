@@ -1,5 +1,4 @@
 import Page from '../layouts/main';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,6 +7,12 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import fetch from 'isomorphic-unfetch';
+import Button from '@material-ui/core/Button';
+import Snackbar from '@material-ui/core/Snackbar';
+import Msg from '../components/Msg';
+import moment from 'moment';
+moment.locale('zh-CN');
+
 const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
@@ -19,12 +24,34 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
-}
+function User({ users }) {
+    const [type, setType] = React.useState('info');
+    const [open, setOpen] = React.useState(false);
+    const [msg, setMsg] = React.useState('');
 
-export default function User() {
     const classes = useStyles();
+
+    function handleClose() {
+        setOpen(false);
+    }
+    async function handleDelete(users, id) {
+        const res = await fetch(`http://localhost:3000/api/user?id=${id}`, {
+            method: 'DELETE',
+        });
+        const text = await res.text();
+        let data = text ? JSON.parse(text) : {};
+        if (data.errorCode) {
+            setType('error');
+            setMsg(data.msg);
+            setOpen(true);
+        } else {
+            let rIndex = users.findIndex(user => user._id === id);
+            users.splice(rIndex, 1);
+            setType('success');
+            setMsg('删除用户成功！');
+            setOpen(true);
+        }
+    }
 
     return (
         <Page title='用户管理'>
@@ -33,38 +60,62 @@ export default function User() {
                     <TableHead>
                         <TableRow>
                             <TableCell>用户 ID</TableCell>
-                            <TableCell align='right'>用户名</TableCell>
-                            <TableCell align='right'>密码</TableCell>
-                            <TableCell align='right'>注册日期</TableCell>
-                            <TableCell align='right'>
-                                最后一次登录日期
-                            </TableCell>
+                            <TableCell align='left'>用户名</TableCell>
+                            <TableCell align='left'>密码</TableCell>
+                            <TableCell align='left'>注册日期</TableCell>
+                            <TableCell align='left'>最后一次登录日期</TableCell>
+                            <TableCell align='left'>操作</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {props.users.map(user => (
+                        {users.map(user => (
                             <TableRow key={user._id}>
                                 <TableCell component='th' scope='row'>
-                                    {user.usr}
+                                    {user._id}
                                 </TableCell>
-                                <TableCell align='right'>{user.psd}</TableCell>
-                                <TableCell align='right'>
-                                    {user.createTime}
+                                <TableCell align='left'>{user.usr}</TableCell>
+                                <TableCell align='left'>{user.psd}</TableCell>
+                                <TableCell align='left'>
+                                    {moment(user.createTime).format('lll')}
                                 </TableCell>
-                                <TableCell align='right'>
-                                    {user.updateTime}
+                                <TableCell align='left'>
+                                    {moment(user.updateTime).format('lll')}
+                                </TableCell>
+                                <TableCell align='left'>
+                                    <Button
+                                        variant='contained'
+                                        color='primary'
+                                        onClick={() =>
+                                            handleDelete(users, user._id)
+                                        }
+                                    >
+                                        删除
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </Paper>
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+                open={open}
+                autoHideDuration={1000}
+                onClose={handleClose}
+            >
+                <Msg onClose={handleClose} variant={type} message={msg} />
+            </Snackbar>
         </Page>
     );
 }
 
 User.getInitialProps = async ({ req }) => {
-    const res = await fetch('/api/users');
+    const res = await fetch('http://localhost:3000/api/users');
     const json = await res.json();
     return { users: json.data };
 };
+
+export default User;

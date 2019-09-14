@@ -1,33 +1,34 @@
 const User = require('../db/models/user');
+
 class UserService {
-    async addUser(usr, psd) {
-        try {
+    addUser(usr, psd) {
+        return new Promise((resolve, reject) => {
             const user = new User({ usr, psd });
-            const res = await user.save();
-            return res;
-        } catch (error) {
-            throw new Error('用户名已存在');
-        }
+            user.save()
+                .then(res => resolve(res))
+                .catch(reason => reject(reason));
+        });
     }
-    async validUser(usr, psd) {
-        try {
-            const res = await User.findOne({ usr, psd });
-            return res;
-        } catch (error) {
-            throw new Error('登录失败');
-        }
+    validUser(usr, psd) {
+        return new Promise((resolve, reject) => {
+            User.findOne({ usr, psd })
+                .then(res => resolve(res))
+                .catch(reason => reject(reason));
+        });
     }
-    async deleteUser(usrId) {
-        const res = await User.deleteOne({ _id: usrId });
+    deleteUser(id) {
+        return new Promise((resolve, reject) => {
+            User.findByIdAndDelete(id)
+                .then(res => resolve(res))
+                .catch(reason => reject(reason));
+        });
     }
-    async updateUserLoginTime() {}
-    async getUsers() {
-        try {
-            const res = await User.find({});
-            return res;
-        } catch (error) {
-            throw new Error('获取失败');
-        }
+    getUsers() {
+        return new Promise((resolve, reject) => {
+            User.find({})
+                .then(res => resolve(res))
+                .catch(reason => reject(reason));
+        });
     }
 }
 

@@ -1,23 +1,31 @@
-// Import prerequisite packages
 const next = require('next');
 const Koa = require('koa');
 const Router = require('koa-router');
+const multer = require('@koa/multer');
 const bodyParser = require('koa-bodyparser');
 const createRes = require('./helpers/response');
 const UserService = require('./services/user');
 const CategoryService = require('./services/category');
 const NewsService = require('./services/news');
 const initDB = require('./db/index');
-// Initialize KoaJs server and router
+const errorHandle = require('./helpers/errorHandle');
 const server = new Koa();
 const router = new Router();
 const userService = new UserService();
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './static/');
+    },
+    filename: function(req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname);
+    },
+});
+const upload = multer({ storage: storage });
+
 const categoryService = new CategoryService();
 const newsService = new NewsService();
-// Initialize NextJs instance and expose request handler
 const nextApp = next({ dev: true });
 const handler = nextApp.getRequestHandler();
-
 (async () => {
     try {
         await nextApp.prepare();
@@ -31,25 +39,150 @@ const handler = nextApp.getRequestHandler();
             ctx.respond = false;
         });
 
-        router.get('/api/users', async ctx => {
+        // 上传封面图
+        router.post('/api/uploadImg', upload.single('cover'), async ctx => {
             try {
-                const res = userService.getUsers();
+                createRes({ ctx, data: ctx.file });
+            } catch (error) {
+                createRes({ ctx, msg: error.message });
+            }
+        });
+
+        // 获取类目列表
+        router.get('/api/categories', async ctx => {
+            try {
+                const res = await categoryService.getCategories();
                 createRes({ ctx, data: res });
             } catch (error) {
-                console.log(error);
+                createRes({ ctx, msg: error.message });
             }
         });
 
-        router.post('/api/addUser', async ctx => {
+        // 获取用户列表
+        router.get('/api/users', async ctx => {
+            try {
+                const res = await userService.getUsers();
+                createRes({ ctx, data: res });
+            } catch (error) {
+                createRes({ ctx, msg: error.message });
+            }
+        });
+
+        // 获取新闻列表
+        router.get('/api/news', async ctx => {
+            try {
+                const res = await newsService.getNews();
+                createRes({ ctx, data: res });
+            } catch (error) {
+                createRes({ ctx, msg: error.message });
+            }
+        });
+
+        // 删除类目
+        router.delete('/api/category', async ctx => {
+            try {
+                const { id } = ctx.query;
+                await categoryService.deleteCategory(id);
+                createRes({ ctx, statusCode: 204 });
+            } catch (error) {
+                createRes({
+                    ctx,
+                    errorCode: 1,
+                    msg: errorHandle(error),
+                });
+            }
+        });
+
+        // 删除新闻
+        router.delete('/api/news', async ctx => {
+            try {
+                const { id } = ctx.query;
+                await newsService.deleteNews(id);
+                createRes({ ctx, statusCode: 204 });
+            } catch (error) {
+                createRes({
+                    ctx,
+                    errorCode: 1,
+                    msg: errorHandle(error),
+                });
+            }
+        });
+
+        // 删除用户
+        router.delete('/api/user', async ctx => {
+            try {
+                const { id } = ctx.query;
+                await userService.deleteUser(id);
+                createRes({ ctx, statusCode: 204 });
+            } catch (error) {
+                createRes({
+                    ctx,
+                    errorCode: 1,
+                    msg: errorHandle(error),
+                });
+            }
+        });
+
+        // 添加用户
+        router.post('/api/user', async ctx => {
             try {
                 const { usr, psd } = ctx.request.body;
-                const res = userService.addUser(usr, psd);
-                createRes({ ctx, statusCode: 201, data: res });
+                await userService.addUser(usr, psd);
+                createRes({ ctx, statusCode: 201 });
             } catch (error) {
-                console.log(error);
+                createRes({
+                    ctx,
+                    errorCode: 1,
+                    statusCode: 400,
+                    msg: errorHandle(error),
+                });
             }
         });
 
+        // 添加类目
+        router.post('/api/category', async ctx => {
+            try {
+                const { name, weight } = ctx.request.body;
+                await categoryService.addCategory(name, weight);
+                createRes({ ctx, statusCode: 201 });
+            } catch (error) {
+                createRes({
+                    ctx,
+                    errorCode: 1,
+                    statusCode: 400,
+                    msg: errorHandle(error),
+                });
+            }
+        });
+        // 添加新闻
+        router.post('/api/news', async ctx => {
+            try {
+                const {
+                    title,
+                    category,
+                    author,
+                    cover,
+                    content,
+                } = ctx.request.body;
+                await newsService.addNews(
+                    title,
+                    category,
+                    author,
+                    cover,
+                    content
+                );
+                createRes({ ctx, statusCode: 201 });
+            } catch (error) {
+                createRes({
+                    ctx,
+                    errorCode: 1,
+                    statusCode: 400,
+                    msg: errorHandle(error),
+                });
+            }
+        });
+
+        // 验证用户
         router.post('/api/validUser', async ctx => {
             try {
                 const { usr, psd } = ctx.request.body;
@@ -60,7 +193,12 @@ const handler = nextApp.getRequestHandler();
                     createRes({ ctx, errorCode: 1, msg: '用户名或密码错误！' });
                 }
             } catch (error) {
-                console.log(error);
+                createRes({
+                    ctx,
+                    errorCode: 1,
+                    statusCode: 400,
+                    msg: errorHandle(error),
+                });
             }
         });
 

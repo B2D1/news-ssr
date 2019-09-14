@@ -1,19 +1,33 @@
 const Category = require('../db/models/category');
-class CategoryService {
-    async addCategory(usr, psd) {
-        const Category = new Category({ usr, psd });
-        const res = await Category.save();
-        console.log(res);
-        return res;
-    }
-    async deleteCategory(usrId) {
-        const res = await Category.deleteOne({_id:usrId}); 
-    }
-    async updateCategoryLoginTime() {
+const News = require('../db/models/news');
 
+class CategoryService {
+    addCategory(name, weight) {
+        return new Promise((resolve, reject) => {
+            const category = new Category({ name, weight });
+            category
+                .save()
+                .then(value => resolve(value))
+                .catch(reason => reject(reason));
+        });
     }
-    async getCategoryList() {
-        const res = await Category.find({});
+    deleteCategory(id) {
+        return new Promise((resolve, reject) => {
+            Promise.all([
+                Category.findByIdAndDelete(id),
+                News.deleteMany({ category: id }),
+            ])
+                .then(res => resolve(res))
+                .catch(reason => reject(reason));
+        });
+    }
+    getCategories() {
+        return new Promise((resolve, reject) => {
+            Category.find({})
+                // .populate('news')
+                .then(res => resolve(res))
+                .catch(reason => reject(reason));
+        });
     }
 }
 

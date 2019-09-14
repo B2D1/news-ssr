@@ -2,13 +2,13 @@ import Meta from '../components/meta';
 import Router from 'next/router';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import IconPerson from '@material-ui/icons/Person';
 import List from '@material-ui/core/List';
 import IconViewModule from '@material-ui/icons/ViewModule';
+import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -21,7 +21,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-const drawerWidth = 240;
+
+const drawerWidth = 200;
 
 const useStyles = makeStyles(theme => ({
     avatar: {
@@ -74,10 +75,6 @@ export default function Page(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
-    function handleChange(event) {
-        setAuth(event.target.checked);
-    }
-
     function handleMenu(event) {
         setAnchorEl(event.currentTarget);
     }
@@ -90,12 +87,17 @@ export default function Page(props) {
             <div className={classes.toolbar} />
             <Divider />
             <List>
-                <ListItem button key='首页' onClick={() => Router.push('/home')}>
+                <ListItem
+                    button
+                    key='首页'
+                    onClick={() => Router.push('/home')}
+                >
                     <ListItemIcon>
                         <HomeIcon />
                     </ListItemIcon>
                     <ListItemText primary='首页' />
                 </ListItem>
+                <Divider />
                 <ListItem
                     button
                     key='用户管理'
@@ -106,6 +108,7 @@ export default function Page(props) {
                     </ListItemIcon>
                     <ListItemText primary='用户管理' />
                 </ListItem>
+                <Divider />
                 <ListItem
                     button
                     key='新闻管理'
@@ -118,13 +121,34 @@ export default function Page(props) {
                 </ListItem>
                 <ListItem
                     button
-                    key='类目管理'
+                    key='addNews'
+                    onClick={() => Router.push('/addNews')}
+                >
+                    <ListItemIcon>
+                        <IconViewModule />
+                    </ListItemIcon>
+                    <ListItemText primary='新增新闻' />
+                </ListItem>
+                <Divider />
+                <ListItem
+                    button
+                    key='category'
                     onClick={() => Router.push('/category')}
                 >
                     <ListItemIcon>
                         <IconViewModule />
                     </ListItemIcon>
                     <ListItemText primary='类目管理' />
+                </ListItem>
+                <ListItem
+                    button
+                    key='addCategory'
+                    onClick={() => Router.push('/addCategory')}
+                >
+                    <ListItemIcon>
+                        <IconViewModule />
+                    </ListItemIcon>
+                    <ListItemText primary='新增类目' />
                 </ListItem>
             </List>
         </div>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import fetch from 'isomorphic-unfetch';
@@ -9,6 +8,7 @@ import Router from 'next/router';
 import Typography from '@material-ui/core/Typography';
 import Msg from '../components/Msg';
 import Snackbar from '@material-ui/core/Snackbar';
+
 const useStyles = makeStyles(theme => ({
     root: {
         position: 'fixed',
@@ -112,7 +112,7 @@ export default function Index() {
                     horizontal: 'center',
                 }}
                 open={open}
-                autoHideDuration={2000}
+                autoHideDuration={1000}
                 onClose={handleClose}
             >
                 <Msg

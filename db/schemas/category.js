@@ -1,5 +1,6 @@
-var mongoose = require('mongoose');
-const CategorySchema = new mongoose.Schema(
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const CategorySchema = new Schema(
     {
         name: {
             type: String,
@@ -11,6 +12,7 @@ const CategorySchema = new mongoose.Schema(
             type: Number,
             default: 1,
         },
+        news: [{ type: Schema.Types.ObjectId, ref: 'News' }],
     },
     {
         timestamps: { createdAt: 'createTime', updatedAt: 'updateTime' },
