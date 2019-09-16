@@ -37,7 +37,7 @@ export default function Index() {
             setOpen(true);
         } else {
             // 发起请求
-            const res = await fetch('/api/validUser', {
+            const res = await fetch('http://localhost:8080/api/validUser', {
                 method: 'POST',
                 body: JSON.stringify({
                     usr: values.usr,
@@ -57,11 +57,11 @@ export default function Index() {
     }
 
     return (
-        <div>
+        <React.Fragment>
             <Grid container className={classes.root} spacing={2}>
                 <Grid container justify='center'>
                     <Typography variant='h4' component='h1'>
-                        【72 Kr】管理平台
+                        72 Kr 管理平台
                     </Typography>
                 </Grid>
                 <Grid container justify='center'>
@@ -132,6 +132,10 @@ export default function Index() {
                     background-size: 50px 50px;
                 }
             `}</style>
-        </div>
+        </React.Fragment>
     );
 }
+
+Index.getInitialProps = async () => {
+    return { pageTitle: '72 Kr | 请登录', layout: 0 };
+};

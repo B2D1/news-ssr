@@ -1,4 +1,3 @@
-import Page from '../layouts/main';
 import Grid from '@material-ui/core/Grid';
 import fetch from 'isomorphic-unfetch';
 import { makeStyles } from '@material-ui/core/styles';
@@ -40,7 +39,7 @@ export default function AddNews({ categories }) {
         const file = document.getElementById('cover').files[0];
         const formData = new FormData();
         formData.append('cover', file, file.name);
-        const res = await fetch('http://localhost:3000/api/uploadImg', {
+        const res = await fetch('http://localhost:8080/api/uploadImg', {
             method: 'POST',
             body: formData,
         });
@@ -67,7 +66,7 @@ export default function AddNews({ categories }) {
             setOpen(true);
             return;
         }
-        const res = await fetch('http://localhost:3000/api/news', {
+        const res = await fetch('http://localhost:8080/api/news', {
             method: 'POST',
             body: JSON.stringify({
                 title,
@@ -93,7 +92,7 @@ export default function AddNews({ categories }) {
     }
 
     return (
-        <Page title='新增新闻'>
+        <React.Fragment>
             <Grid container spacing={2}>
                 <Grid container justify='center'>
                     <Grid item sm={5}>
@@ -203,12 +202,17 @@ export default function AddNews({ categories }) {
             >
                 <Msg onClose={handleClose} variant={type} message={msg} />
             </Snackbar>
-        </Page>
+        </React.Fragment>
     );
 }
 
-AddNews.getInitialProps = async ({ req }) => {
-    const res = await fetch('http://localhost:3000/api/categories');
+AddNews.getInitialProps = async () => {
+    const res = await fetch('http://localhost:8080/api/categories');
     const json = await res.json();
-    return { categories: json.data };
+    return {
+        shellTitle: '新增新闻',
+        pageTitle: '72 Kr | 新增新闻',
+        layout: 1,
+        categories: json.data,
+    };
 };

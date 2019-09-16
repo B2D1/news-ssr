@@ -1,4 +1,4 @@
-const createRes = params => {
+const resHandle = params => {
     params.ctx.status = params.statusCode || 200;
     params.ctx.body = {
         errorCode: params.errorCode || 0,
@@ -7,4 +7,4 @@ const createRes = params => {
     };
 };
 
-module.exports = createRes;
+module.exports = resHandle;

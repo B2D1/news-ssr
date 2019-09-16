@@ -3,11 +3,11 @@ module.exports = {
         return {
             '/': { page: '/' },
             '/home': { page: '/home' },
-            '/news': { page: '/news' },
             '/user': { page: '/user' },
+            '/news': { page: '/news' },
             '/category': { page: '/category' },
-            '/addCategory': { page: '/addCategory' },
             '/addNews': { page: '/addNews' },
+            '/addCategory': { page: '/addCategory' },
         };
     },
 };

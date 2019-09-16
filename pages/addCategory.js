@@ -1,4 +1,3 @@
-import Page from '../layouts/main';
 import Grid from '@material-ui/core/Grid';
 import fetch from 'isomorphic-unfetch';
 import TextField from '@material-ui/core/TextField';
@@ -7,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import Msg from '../components/Msg';
 
-function AddCategory() {
+export default function AddCategory() {
     const [type, setType] = React.useState('info');
     const [open, setOpen] = React.useState(false);
     const [msg, setMsg] = React.useState('');
@@ -31,7 +30,7 @@ function AddCategory() {
             setOpen(true);
             return;
         }
-        const res = await fetch('http://localhost:3000/api/category', {
+        const res = await fetch('http://localhost:8080/api/category', {
             method: 'POST',
             body: JSON.stringify({
                 name,
@@ -54,7 +53,7 @@ function AddCategory() {
     }
 
     return (
-        <Page title='新增类目'>
+        <React.Fragment>
             <Grid container spacing={2}>
                 <Grid container justify='center'>
                     <Grid item sm={5}>
@@ -109,8 +108,14 @@ function AddCategory() {
             >
                 <Msg onClose={handleClose} variant={type} message={msg} />
             </Snackbar>
-        </Page>
+        </React.Fragment>
     );
 }
 
-export default AddCategory;
+AddCategory.getInitialProps = async () => {
+    return {
+        shellTitle: '新增类目',
+        pageTitle: '72 Kr | 新增类目',
+        layout: 1,
+    };
+};

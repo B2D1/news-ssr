@@ -1,4 +1,3 @@
-import Meta from '../components/meta';
 import Router from 'next/router';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -62,7 +61,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function Page(props) {
+export default function MainLayout(props) {
     const { container, children, title } = props;
     const classes = useStyles();
     const theme = useTheme();
@@ -83,7 +82,7 @@ export default function Page(props) {
         setAnchorEl(null);
     }
     const drawer = (
-        <div>
+        <React.Fragment>
             <div className={classes.toolbar} />
             <Divider />
             <List>
@@ -151,7 +150,7 @@ export default function Page(props) {
                     <ListItemText primary='新增类目' />
                 </ListItem>
             </List>
-        </div>
+        </React.Fragment>
     );
 
     return (
@@ -245,7 +244,6 @@ export default function Page(props) {
             </nav>
             <main className={classes.content}>
                 <div className={classes.toolbar} />
-                <Meta />
                 {children}
             </main>
         </div>

@@ -1,5 +1,22 @@
 # news-ssr
 
+## 运行
+```js
+cd news-ssr
+# 开启后端服务 8080
+node server.js
+# 开发模式 3000
+npm run dev
+# 打包
+npm run build
+# 运行打包文件 3000
+npm run start
+# 导出静态资源
+npm run export
+# 开启静态服务，监听 3000 端口，需安装 serve 包
+cd out && serve -p 3000
+```
+
 ## 坑点
 
 -   当修改了 `Schema` 配置，需要删除数据库并重启
