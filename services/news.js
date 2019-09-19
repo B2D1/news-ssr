@@ -43,6 +43,22 @@ class NewsService {
                 .catch(reason => reject(reason));
         });
     }
+    getNewsByCategory(categoryId) {
+        return new Promise((resolve, reject) => {
+            Category.findById(categoryId)
+                .populate('news')
+                .then(res => resolve(res))
+                .catch(reason => reject(reason));
+        });
+    }
+    getNewsById(newsId) {
+        return new Promise((resolve, reject) => {
+            News.findById(newsId)
+                .populate('category')
+                .then(res => resolve(res))
+                .catch(reason => reject(reason));
+        });
+    }
 }
 
 module.exports = NewsService;

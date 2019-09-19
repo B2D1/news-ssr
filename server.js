@@ -57,6 +57,17 @@ router.get('/api/users', async ctx => {
 // 获取新闻列表
 router.get('/api/news', async ctx => {
     try {
+        const { newsId, categoryId } = ctx.query;
+        if (categoryId) {
+            const res = await newsService.getNewsByCategory(categoryId);
+            resHandle({ ctx, data: res });
+            return;
+        }
+        if (newsId) {
+            const res = await newsService.getNewsById(newsId);
+            resHandle({ ctx, data: res });
+            return;
+        }
         const res = await newsService.getNews();
         resHandle({ ctx, data: res });
     } catch (error) {
